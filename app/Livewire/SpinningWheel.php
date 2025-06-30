@@ -16,6 +16,7 @@ class SpinningWheel extends Component
     public $isLoading = false; // To show loading state during spin
     public $spinHistory = []; // New public property to hold spin history
     protected GameService $gameService;
+    public $segments = [];
 
     protected $listeners = ['spinCompleted' => 'storeResult','balanceUpdated' => 'updateBalance'];
 
@@ -30,13 +31,12 @@ class SpinningWheel extends Component
      */
     public function mount()
     {
-       // $this->gameService = $gameService;
-
         $user = Auth::user();
 
         if ($user) {
             $this->balance = $this->gameService->getUserBalance($user);
             $this->spinHistory = $this->gameService->getUserSpinHistory($user);
+            $this->segments = $this->gameService->getSegments();
         }
     }
 

@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Spin;
 use App\Models\BalanceLog;
 use Illuminate\Support\Collection; // To ensure spin history is a Collection
+use App\Models\WheelSegment;
 
 class GameService
 {
@@ -15,16 +16,16 @@ class GameService
      *
      * @var array
      */
-    protected array $segments = [
-        ['label' => "Win $10", 'value' => 10],
-        ['label' => "Lose $2", 'value' => -2],
-        ['label' => "Try Again", 'value' => 0],
-        ['label' => "Win $3", 'value' => 3],
-        ['label' => "Lose $10", 'value' => -10],
-        ['label' => "Try Again", 'value' => 0],
-        ['label' => "Win $6", 'value' => 6],
-        ['label' => "Lose $5", 'value' => -5]
-    ];
+    // protected array $segments = [
+    //     ['label' => "Win $10", 'value' => 10],
+    //     ['label' => "Lose $2", 'value' => -2],
+    //     ['label' => "Try Again", 'value' => 0],
+    //     ['label' => "Win $3", 'value' => 3],
+    //     ['label' => "Lose $10", 'value' => -10],
+    //     ['label' => "Try Again", 'value' => 0],
+    //     ['label' => "Win $6", 'value' => 6],
+    //     ['label' => "Lose $5", 'value' => -5]
+    // ];
 
     /**
      * The cost of a single spin.
@@ -45,7 +46,8 @@ class GameService
      */
     public function getSegments(): array
     {
-        return $this->segments;
+       // return $this->segments;
+        return WheelSegment::orderBy('id')->get()->toArray();
     }
 
     /**
@@ -113,14 +115,28 @@ class GameService
             'type' => 'spin_cost',
         ]);
 
+        $segments = $this->getSegments();
+
+        // Defensive: make sure segments exist
+        if (empty($segments)) {
+            throw new \Exception('No wheel segments configured.');
+        }
+
+        // Pick segment
+        if (!is_null($frontendIndex) && isset($segments[$frontendIndex])) {
+            $prize = $segments[$frontendIndex];
+        } else {
+            $prize = $segments[array_rand($segments)];
+        }
+
         // Randomly select a prize from the defined segments
        // $prize = $this->segments[array_rand($this->segments)];
         // Determine prize from frontend (if sent), else random
-      if (!is_null($frontendIndex) && isset($this->segments[$frontendIndex])) {
-            $prize = $this->segments[$frontendIndex];
-        } else {
-            $prize = $this->segments[array_rand($this->segments)];
-        }
+    //    if (!is_null($frontendIndex) && isset($this->segments[$frontendIndex])) {
+    //         $prize = $this->segments[$frontendIndex];
+    //     } else {
+    //         $prize = $this->segments[array_rand($this->segments)];
+    //     }
 
 
         $rewardAmount = $prize['value'];
