@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Services\GameService; // Import the GameService
 use Illuminate\Support\Facades\Log; // Import Log facade
+use App\Http\Requests\CreateTokenRequest;
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
 class GameController extends Controller
 {
@@ -20,6 +23,30 @@ class GameController extends Controller
     public function __construct(GameService $gameService)
     {
         $this->gameService = $gameService;
+    }
+
+        public function create(CreateTokenRequest $request)
+    {
+        $user = User::where('email', $request->email)->first();
+
+        if (! $user || ! Hash::check($request->password, $user->password)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Invalid credentials.',
+                'data' => null
+            ], 401);
+        }
+
+        // Create token
+        $token = $user->createToken($request->device_name)->plainTextToken;
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Token created successfully.',
+            'data' => [
+                'token' => $token
+            ]
+        ], 200);
     }
 
     /**
@@ -37,10 +64,18 @@ class GameController extends Controller
 
         $balance = $this->gameService->getUserBalance($user);
 
+        // return response()->json([
+        //     'user_id' => $user->id,
+        //     'balance' => $balance,
+        // ]);
         return response()->json([
-            'user_id' => $user->id,
-            'balance' => $balance,
-        ]);
+            'status' => 'success',
+            'message' => 'User balance fetched successfully.',
+            'data' => [
+                'user_id' => $user->id,
+                'balance' => $balance,
+            ]
+        ], 200);
     }
 
     /**
