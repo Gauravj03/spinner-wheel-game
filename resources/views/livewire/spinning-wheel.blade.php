@@ -176,7 +176,7 @@
                 ctx.rotate(startAngle + arcSize / 2);
                 ctx.textAlign = "right";
                 ctx.fillStyle = "#333"; // Darker text for better contrast on lighter backgrounds
-                ctx.font = "bold " + (radius * 0.09) + "px Inter, sans-serif";
+                ctx.font = "bold " + (radius * 0.12) + "px Inter, sans-serif";
                 ctx.fillText(segments[i].label, radius * 0.85, 0);
                 ctx.restore();
             }

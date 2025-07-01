@@ -63,6 +63,7 @@ class SpinningWheel extends Component
 
         if ($user) {
             $this->balance = $this->gameService->getUserBalance($user);
+            //$this->result = 'Updated Balance';
         }
     }
 
