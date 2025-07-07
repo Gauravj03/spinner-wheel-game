@@ -6,7 +6,11 @@ A fun, interactive spinning wheel game where users can log in, top up their bala
 
 ## 📖 User Story
 
-> As a user, I want to play a spinning wheel game where I can log in, top up my balance, spin the wheel, and have the results stored and displayed.
+> “The user can feel the thrill of chance with every spin.”
+
+The user can top up their balance and spin a dynamic wheel that instantly delivers rewards or penalties — replicating the excitement of a real-life game show. The user expects to see real-time updates, with their balance adjusted immediately and spin results logged for future reference.
+
+The game must offer a smooth, responsive, and visually engaging experience, without any page reloads. Whether winning big or losing small, the user seeks an interactive and fair gameplay experience — powered seamlessly by Laravel, Livewire, and Alpine.js.
 
 ---
 
