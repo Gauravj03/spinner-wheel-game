@@ -172,13 +172,16 @@ php artisan migrate:fresh --seed
 
 ---
 
-## 📸 Screenshots (Optional)
+## 📸 Screenshots
 
-![[Spinning Wheel Dashboard](https://github.com/Gauravj03/spinner-wheel-game/tree/main/public/images/spinner_dashboard.png)
+### 🎯 Spinning Wheel Dashboard
+![Spinning Wheel Dashboard](https://github.com/Gauravj03/spinner-wheel-game/blob/main/public/images/spinner_dashboard.png?raw=true)
 
-![Spinning Wheel Game](https://github.com/Gauravj03/spinner-wheel-game/tree/main/public/images/spinner_wheel_game.png)
+### 🌀 Spinning Wheel Game
+![Spinning Wheel Game](https://github.com/Gauravj03/spinner-wheel-game/blob/main/public/images/spinner_wheel_game.png?raw=true)
 
-![Spinn History](https://github.com/Gauravj03/spinner-wheel-game/tree/main/public/images/spinner_history.png)
+### 📊 Spin History
+![Spin History](https://github.com/Gauravj03/spinner-wheel-game/blob/main/public/images/spinner_history.png?raw=true)
 
 ---
 
