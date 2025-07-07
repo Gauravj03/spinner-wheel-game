@@ -1,79 +1,96 @@
 # 🎯 Spinning Wheel Game — Laravel 11, Livewire 3, Alpine.js
 
-A fun, interactive spinning wheel game where users can log in, top up their balance, spin to win (or lose!) credits, and track results in real-time — built using **Laravel 11**, **Livewire 3**, and **Alpine.js**.
+A fun, interactive spinning wheel game where users can log in, top up their balance, spin to win (or lose!) credits, and track results in real time — built using **Laravel 11**, **Livewire 3**, and **Alpine.js**.
 
 ---
 
 ## 📖 User Story
 
-> As a user, I want to play a spinning wheel game where I can log in, top up my balance, and have the game results stored in a database.
+> As a user, I want to play a spinning wheel game where I can log in, top up my balance, spin the wheel, and have the results stored and displayed.
 
 ---
 
 ## 🚀 Features
 
-✅ User authentication (Laravel Breeze with Livewire)  
-✅ Balance system with “Top Up” functionality  
-✅ Interactive spinning wheel using Alpine.js  
-✅ Real-time updates with Livewire 3  
-✅ API-style backend (token & response structure)  
-✅ Spin history tracking and balance logging  
-✅ Responsive UI with Tailwind CSS and Vite
+- ✅ User authentication (Laravel Breeze + Livewire)
+- ✅ Balance system with top-up option
+- ✅ Interactive spinning wheel using Alpine.js
+- ✅ Real-time updates via Livewire 3
+- ✅ Token-based API backend (REST-style)
+- ✅ Spin history tracking with database logging
+- ✅ Modern UI using Tailwind CSS & Vite
 
 ---
 
 ## 🧱 Tech Stack
 
-| Layer     | Technology                    |
-|-----------|-------------------------------|
-| Backend   | Laravel 11 (API-style)        |
-| Frontend  | Livewire 3 + Alpine.js        |
-| Styling   | Tailwind CSS + Vite           |
-| Database  | MySQL                         |
-| Auth      | Laravel Breeze (Livewire mode)|
+| Layer     | Technology                     |
+|-----------|--------------------------------|
+| Backend   | Laravel 11 (API-style)         |
+| Frontend  | Livewire 3 + Alpine.js         |
+| Styling   | Tailwind CSS + Vite            |
+| Database  | MySQL                          |
+| Auth      | Laravel Breeze (Livewire mode) |
 
 ---
 
-## ✅ Prerequisites
+## ✅ Prerequisites & Setup
 
-- **PHP**: `^8.2` (Laravel 11 requirement)
-- **MySQL**: Any version supporting Laravel 11
-- **Composer**: Latest stable
-- **Node.js**: `20.19.3` ✅ (LTS, compatible with Laravel 11)
-- **npm** or **yarn**
+Make sure the following tools are installed on your system:
 
-Ensure the following PHP extensions are enabled:
+| Tool       | Version / Link                                                                 |
+|------------|----------------------------------------------------------------------------------|
+| **PHP**    | ^8.2 — [Install PHP](https://www.php.net/downloads)                            |
+| **Composer** | Latest — [Get Composer](https://getcomposer.org/download/)                   |
+| **Node.js** | ^20.19.3 — [Download Node.js (LTS)](https://nodejs.org/)                      |
+| **npm**     | Installed with Node.js                                                         |
+| **MySQL**   | Any recent version supporting Laravel 11                                       |
+
+<details>
+<summary>📦 Required PHP Extensions</summary>
+
 ```
 openssl, pdo, mbstring, tokenizer, xml, ctype, json, bcmath, fileinfo
 ```
+</details>
 
 ---
 
-## 🛠️ Installation
+## ⚙️ Installation Steps
+
+> 📝 Tip: You can also clone this repository if you're not creating from scratch.
 
 ```bash
-# Step 1: Create Laravel app
-composer create-project laravel/laravel:^11 spinning-wheel
-
+# Clone the repository (if shared)
+git clone https://github.com/your-username/spinning-wheel.git
 cd spinning-wheel
 
-# Step 2: Install Breeze with Livewire stack
+# Step 1: Install PHP dependencies
+composer install
+
+# Step 2: Install Breeze (if needed)
 composer require laravel/breeze --dev
 php artisan breeze:install livewire
 
-# Step 3: Run migrations and seeders
-php artisan migrate
-php artisan db:seed
+# Step 3: Setup environment file
+cp .env.example .env
 
-# Step 4: Install frontend dependencies
+# Step 4: Set database credentials in `.env` (see below)
+
+# Step 5: Generate app key
+php artisan key:generate
+
+# Step 6: Run migrations and optional seeders
+php artisan migrate --seed
+
+# Step 7: Install and build frontend assets
 npm install
 npm run dev
-
 ```
 
 ---
 
-## 🔑 .env Setup
+## 🔑 .env Example
 
 ```dotenv
 DB_CONNECTION=mysql
@@ -86,41 +103,34 @@ DB_PASSWORD=
 
 ---
 
-## 🧪 Default Login Credentials
+## 🧪 Default Test Credentials
 
-```
+```bash
 Email    : test@example.com
 Password : test1234
 ```
+
+You can customize or seed your own users via `DatabaseSeeder`.
 
 ---
 
 ## ▶️ Run the App
 
 ```bash
-# Start Laravel server
+# Start Laravel development server
 php artisan serve
 
-# Start frontend build watcher
+# Watch frontend files (CSS, JS)
 npm run dev
 ```
 
----
-
-## 🧹 Optional Artisan Commands
-
-```bash
-composer dump-autoload
-php artisan optimize:clear
-php artisan view:clear
-php artisan config:clear
-```
+Open in browser: [http://localhost:8000](http://localhost:8000)
 
 ---
 
-## 🔁 API Token Auth Example
+## 🔁 API Example (Token-Based Auth)
 
-If you expose an endpoint for token generation:
+> Assuming you expose `/api/tokens/create` for issuing personal access tokens:
 
 ```http
 POST /api/tokens/create
@@ -130,32 +140,53 @@ POST /api/tokens/create
   "password": "test1234",
   "device_name": "Browser"
 }
+```
 
-Response:
+**Sample Response**
+```json
 {
   "status": true,
   "data": {
-    "token": "xxxxxxxxx"
+    "token": "xxxxxxxxxxxxxxxxxxxxx"
   },
   "status_code": 200
 }
+```
+
+Use this token as a Bearer token in `Authorization` headers.
+
+---
+
+## 🧹 Useful Artisan Commands
+
+```bash
+composer dump-autoload
+php artisan optimize:clear
+php artisan config:clear
+php artisan migrate:fresh --seed
 ```
 
 ---
 
 ## 📸 Screenshots (Optional)
 
-You can include screenshots or SVG previews of your spinning wheel or UI here.
+![[Spinning Wheel Dashboard](https://github.com/Gauravj03/spinner-wheel-game/tree/main/public/images/spinner_dashboard.png)
+
+![Spinning Wheel Game](https://github.com/Gauravj03/spinner-wheel-game/tree/main/public/images/spinner_wheel_game.png)
+
+![Spinn History](https://github.com/Gauravj03/spinner-wheel-game/tree/main/public/images/spinner_history.png)
 
 ---
 
 ## 👨‍💻 Author
 
-Developed by **Test User**  
-Feel free to fork, extend, or improve this game — contributions welcome!
+Developed by **Gaurav Jain**  
+Web Developer with experience in **Laravel**, **Livewire**, and full-stack development.  
+**Skills**: PHP MVC Developer, Laravel, Livewire, MySQL, REST APIs, JavaScript, Alpine.js, Tailwind CSS
+
 
 ---
 
 ## 📄 License
 
-[MIT](LICENSE)
+[MIT License](LICENSE)
