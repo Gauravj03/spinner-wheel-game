@@ -5,6 +5,7 @@ namespace App\Livewire;
 use Livewire\Component;
 use App\Models\Spin;
 use App\Models\BalanceLog;
+use App\Services\GameService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
@@ -14,8 +15,15 @@ class SpinningWheel extends Component
     public $balance;
     public $isLoading = false; // To show loading state during spin
     public $spinHistory = []; // New public property to hold spin history
+    protected GameService $gameService;
+    public $segments = [];
 
     protected $listeners = ['spinCompleted' => 'storeResult','balanceUpdated' => 'updateBalance'];
+
+    public function boot(GameService $gameService)
+    {
+        $this->gameService = $gameService;
+    }
 
     /**
      * Mount is called once when the component is initialized.
@@ -23,39 +31,60 @@ class SpinningWheel extends Component
      */
     public function mount()
     {
-        $this->updateBalance();
-        $this->loadSpinHistory(); // Load spin history on mount
+        $user = Auth::user();
+
+        if ($user) {
+            $this->balance = $this->gameService->getUserBalance($user);
+            $this->spinHistory = $this->gameService->getUserSpinHistory($user);
+            $this->segments = $this->gameService->getSegments();
+        }
     }
 
     /**
      * Updates the local balance property from the authenticated user.
      */
+    // public function updateBalance()
+    // {
+    //     $user = Auth::user();
+    //     if ($user) {
+    //         $this->balance = $user->balance;
+    //         // Refresh user model from DB to get latest balance
+    //         $user->refresh();
+    //         $this->balance = $user->balance;
+    //        // $this->result = "Balance topped up by $5!";
+    //     } else {
+    //         $this->balance = 0; // Default to 0 if no user is authenticated
+    //     }
+    // }
+
     public function updateBalance()
     {
         $user = Auth::user();
+
         if ($user) {
-            $this->balance = $user->balance;
-            // Refresh user model from DB to get latest balance
-            $user->refresh();
-            $this->balance = $user->balance;
-           // $this->result = "Balance topped up by $5!";
-        } else {
-            $this->balance = 0; // Default to 0 if no user is authenticated
+            $this->balance = $this->gameService->getUserBalance($user);
+            //$this->result = 'Updated Balance';
         }
     }
 
     /**
      * Loads the spin history for the authenticated user.
      */
+    // protected function loadSpinHistory()
+    // {
+    //     $user = Auth::user();
+    //     if ($user) {
+    //         // Fetch spins, ordered by latest first
+    //         $this->spinHistory = $user->spins()->latest()->get();
+    //     } else {
+    //         $this->spinHistory = collect(); // Empty collection if no user
+    //     }
+    // }
+
     protected function loadSpinHistory()
     {
         $user = Auth::user();
-        if ($user) {
-            // Fetch spins, ordered by latest first
-            $this->spinHistory = $user->spins()->latest()->get();
-        } else {
-            $this->spinHistory = collect(); // Empty collection if no user
-        }
+        $this->spinHistory = $user ? $this->gameService->getUserSpinHistory($user) : collect();
     }
 
     /**
@@ -71,17 +100,9 @@ class SpinningWheel extends Component
             return;
         }
 
-        $topUpAmount = 5; // Predefined amount to add
-
-        $user->increment('balance', $topUpAmount);
-        BalanceLog::create([
-            'user_id' => $user->id,
-            'amount' => $topUpAmount,
-            'type' => 'top_up',
-        ]);
-
-        $this->updateBalance();
-        $this->result = "Balance topped up by {$topUpAmount}!";
+        $result = $this->gameService->topUp($user);
+        $this->balance = $result['new_balance'];
+        $this->result = $result['message'];
     }
 
     /**
@@ -91,7 +112,6 @@ class SpinningWheel extends Component
     public function startSpin()
     {
         $user = Auth::user();
-        $cost = 5; // Predefined cost per spin
 
         if (!$user) {
             session()->flash('message', 'Please log in to spin the wheel.');
@@ -99,7 +119,7 @@ class SpinningWheel extends Component
             return;
         }
 
-        if ($user->balance < $cost) {
+        if ($this->balance < $this->gameService->getSpinCost()) {
             $this->result = "Insufficient balance. Top up to play!";
             $this->isLoading = false;
             return;
@@ -108,7 +128,7 @@ class SpinningWheel extends Component
         $this->isLoading = true;
         $this->result = "Spinning...";
 
-        $this->dispatch('startSpinAnimation', ['cost' => $cost]);
+        $this->dispatch('startSpinAnimation', ['cost' => $this->gameService->getSpinCost()]);
     }
 
     /**
@@ -117,75 +137,41 @@ class SpinningWheel extends Component
      *
      * @param array|null $data Array containing 'value' (reward amount) and 'label' (result text).
      */
-    public function storeResult($data = null)
+        public function storeResult($data = null)
+        {
+                    $user = Auth::user();
+
+        if (!$user || !is_array($data) || !isset($data['label']) || !isset($data['value'])) {
+            $this->result = "Invalid or missing spin result.";
+            $this->isLoading = false;
+            return;
+        }
+
+        // Find the index of the segment by label (safer than trusting frontend index blindly)
+        $segments = $this->gameService->getSegments();
+        $index = collect($segments)->search(fn($segment) => $segment['label'] === $data['label']);
+
+        $result = $this->gameService->processSpin($user, is_int($index) ? $index : null);
+
+        $this->balance = $result['new_balance'];
+        $this->result = $result['message'];
+        $this->spinHistory = $this->gameService->getUserSpinHistory($user);
+        $this->isLoading = false;
+
+        $this->dispatch('balanceUpdated');
+        }
+
+
+    protected function findSegmentIndex(string $label): ?int
     {
-        $cost = 5; // Predefined cost per spin
-        $user = Auth::user();
-
-        if (!$user) {
-            Log::error('Attempt to store spin result for unauthenticated user.', ['data' => $data]);
-            $this->result = "Error: User not authenticated.";
-            $this->isLoading = false;
-            return;
+        foreach ($this->gameService->getSegments() as $index => $segment) {
+            if ($segment['label'] === $label) {
+                return $index;
+            }
         }
-
-        if (!is_array($data) || !isset($data['value']) || !isset($data['label'])) {
-            Log::error('SpinCompleted event received with invalid or missing data.', ['received_data' => $data]);
-            $this->result = "Error: Spin result data missing or invalid.";
-            $this->isLoading = false;
-            return;
-        }
-
-        // Re-check balance just before deduction (defense in depth)
-        if ($user->balance < $cost) {
-            $this->result = "Insufficient balance for this spin. Please top up.";
-            $this->isLoading = false;
-            return;
-        }
-
-        // Deduct cost of spin
-        $user->decrement('balance', $cost);
-        BalanceLog::create([
-            'user_id' => $user->id,
-            'amount' => -$cost,
-            'type' => 'spin_cost',
-        ]);
-
-        $rewardAmount = $data['value'];
-        $resultLabel = $data['label'];
-
-        // Apply reward/loss amount
-        if ($rewardAmount !== 0) { // Only increment/decrement if there's an actual change
-            $user->increment('balance', $rewardAmount);
-            BalanceLog::create([
-                'user_id' => $user->id,
-                'amount' => $rewardAmount,
-                'type' => ($rewardAmount > 0) ? 'spin_reward' : 'spin_loss', // Differentiate type
-            ]);
-        }
-
-        // Store spin details
-        Spin::create([
-            'user_id' => $user->id,
-            'cost' => $cost,
-            'reward' => $rewardAmount,
-            'result_label' => $resultLabel,
-        ]);
-
-        // Set the result message based on the outcome
-        if ($rewardAmount > 0) {
-            $this->result = "Congratulations! You {$resultLabel}!";
-        } elseif ($rewardAmount < 0) {
-            $this->result = "Too bad! You {$resultLabel}.";
-        } else {
-            $this->result = "Hard luck! You got '{$resultLabel}'.";
-        }
-
-        $this->updateBalance();    // Refresh balance displayed on frontend
-        $this->loadSpinHistory();  // Load spin history after a new spin
-        $this->dispatch('balanceUpdated'); // 
-        $this->isLoading = false;  // End loading state
+        return null;
     }
+
 
     public function render()
     {

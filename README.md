@@ -1,66 +1,161 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🎯 Spinning Wheel Game — Laravel 11, Livewire 3, Alpine.js
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A fun, interactive spinning wheel game where users can log in, top up their balance, spin to win (or lose!) credits, and track results in real-time — built using **Laravel 11**, **Livewire 3**, and **Alpine.js**.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 📖 User Story
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+> As a user, I want to play a spinning wheel game where I can log in, top up my balance, and have the game results stored in a database.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 🚀 Features
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+✅ User authentication (Laravel Breeze with Livewire)  
+✅ Balance system with “Top Up” functionality  
+✅ Interactive spinning wheel using Alpine.js  
+✅ Real-time updates with Livewire 3  
+✅ API-style backend (token & response structure)  
+✅ Spin history tracking and balance logging  
+✅ Responsive UI with Tailwind CSS and Vite
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## 🧱 Tech Stack
 
-## Laravel Sponsors
+| Layer     | Technology                    |
+|-----------|-------------------------------|
+| Backend   | Laravel 11 (API-style)        |
+| Frontend  | Livewire 3 + Alpine.js        |
+| Styling   | Tailwind CSS + Vite           |
+| Database  | MySQL                         |
+| Auth      | Laravel Breeze (Livewire mode)|
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+---
 
-### Premium Partners
+## ✅ Prerequisites
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+- **PHP**: `^8.2` (Laravel 11 requirement)
+- **MySQL**: Any version supporting Laravel 11
+- **Composer**: Latest stable
+- **Node.js**: `20.19.3` ✅ (LTS, compatible with Laravel 11)
+- **npm** or **yarn**
 
-## Contributing
+Ensure the following PHP extensions are enabled:
+```
+openssl, pdo, mbstring, tokenizer, xml, ctype, json, bcmath, fileinfo
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+## 🛠️ Installation
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+# Step 1: Create Laravel app
+composer create-project laravel/laravel:^11 spinning-wheel
 
-## Security Vulnerabilities
+cd spinning-wheel
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# Step 2: Install Breeze with Livewire stack
+composer require laravel/breeze --dev
+php artisan breeze:install livewire
 
-## License
+# Step 3: Run migrations and seeders
+php artisan migrate
+php artisan db:seed
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# Step 4: Install frontend dependencies
+npm install
+npm run dev
+
+```
+
+---
+
+## 🔑 .env Setup
+
+```dotenv
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=spinner_wheel_game
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+---
+
+## 🧪 Default Login Credentials
+
+```
+Email    : test@example.com
+Password : test1234
+```
+
+---
+
+## ▶️ Run the App
+
+```bash
+# Start Laravel server
+php artisan serve
+
+# Start frontend build watcher
+npm run dev
+```
+
+---
+
+## 🧹 Optional Artisan Commands
+
+```bash
+composer dump-autoload
+php artisan optimize:clear
+php artisan view:clear
+php artisan config:clear
+```
+
+---
+
+## 🔁 API Token Auth Example
+
+If you expose an endpoint for token generation:
+
+```http
+POST /api/tokens/create
+
+{
+  "email": "test@example.com",
+  "password": "test1234",
+  "device_name": "Browser"
+}
+
+Response:
+{
+  "status": true,
+  "data": {
+    "token": "xxxxxxxxx"
+  },
+  "status_code": 200
+}
+```
+
+---
+
+## 📸 Screenshots (Optional)
+
+You can include screenshots or SVG previews of your spinning wheel or UI here.
+
+---
+
+## 👨‍💻 Author
+
+Developed by **Test User**  
+Feel free to fork, extend, or improve this game — contributions welcome!
+
+---
+
+## 📄 License
+
+[MIT](LICENSE)

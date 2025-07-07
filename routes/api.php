@@ -19,29 +19,7 @@ use App\Http\Controllers\Api\GameController; // Import your new controller
 // This is typically a route where a user logs in with email/password
 // and receives a token back. For simplicity, we'll use a basic example.
 // In a real app, you'd likely have a dedicated AuthController.
-Route::post('/tokens/create', function (Request $request) {
-    $request->validate([
-        'email' => 'required|email',
-        'password' => 'required',
-        'device_name' => 'required', // E.g., 'iPhone', 'Web Browser'
-    ]);
-
-    // http://localhost:8000/api/tokens/create
-
-    $user = App\Models\User::where('email', $request->email)->first();
-
-    if (! $user || ! Hash::check($request->password, $user->password)) {
-        return response()->json(['message' => 'Invalid credentials'], 401);
-    }
-
-    // Delete existing tokens if desired (for single active session)
-    // $user->tokens()->delete();
-
-    // Create a new token
-    $token = $user->createToken($request->device_name)->plainTextToken;
-
-    return response()->json(['token' => $token]);
-});
+Route::post('/tokens/create', [GameController::class, 'create']); // http://localhost:8000/api/tokens/create
 
 
 // --- Protected API Endpoints for the Game ---
